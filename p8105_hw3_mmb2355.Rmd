@@ -144,3 +144,22 @@ accel_final |>
 
 * In the dataset, there is 158,400 women (females) and 169,920 men (males)
 * In the boxplot, the median age between men and women who's education level is less than high school are the most similar (around 60 years old), while the median for both sexes who's education level is high school equivalent is the most different (62 years for women, 53 years for men). Women and men who's education level is more than high school have the lowest median compared to the other education level groups, with ages 41 and 43, respectfully.
+
+###  Using your tidied dataset, aggregate across minutes to create a total activity variable for each participant. Plot these total activities (y-axis) against age (x-axis); your plot should compare men to women and have separate panels for each education level. Include a trend line or a smooth to illustrate differences. Comment on your plot.
+
+```{r}
+accel_final |> 
+  group_by(seqn, sex, age, education) |> 
+  summarize(
+    total_activity = sum(acceleration, na.rm = TRUE)
+  ) |> 
+  ggplot(aes(x = age, y = total_activity, color = sex)) +
+  geom_point(alpha = 0.5) +
+  geom_smooth(se = FALSE) +
+  facet_grid(. ~ education) +
+  theme(legend.position = "bottom")
+```
+
+* In all three education level plots, the common trend is that as one increases in age, their total activity decreases (negative relationship). 
+* The high school equivalent and more than high school plots show that females have an overall higher total activity than males, whereas in the less than high school plot, men have the higher total activity after age 40.
+* The more than high school plot, there is more variability in the graph compared to the other education levels.
