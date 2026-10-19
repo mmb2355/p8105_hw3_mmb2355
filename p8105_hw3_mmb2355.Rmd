@@ -181,7 +181,7 @@ accel_final |>
   theme(legend.position = "bottom")
 ```
 
-* In all three education plots, the 24-day activity time peaked around the 10th hour, slightly plateaued until the 20th hour, and then decreased. Overall, females have a higher activity time compared to males across all education levels. Less than high school had the highest 24-day activity time at almost 16 g-mins. 
+* In all three education plots, the 24-day activity time dipped at the 5th hour, peaked around the 10th hour, slightly plateaued until the 20th hour, and then decreased. Overall, females have a higher activity time compared to males across all education levels. Less than high school had the highest 24-day activity time at almost 16 g-mins. 
 
 ## Problem 3
 
