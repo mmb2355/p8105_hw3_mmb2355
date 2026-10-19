@@ -56,7 +56,7 @@ ny_noaa |>
       7 ~ "July"
     )
   )|> 
-  ggplot(aes(x = year, y = mean_tmax, color = id)) +
+  ggplot(aes(x = year, y = mean_tmax)) +
   geom_point() +
   facet_grid(. ~ month_name) +
   theme(legend.position = "none")
@@ -128,13 +128,13 @@ accel_final =
   filter(age >= 21)
 ```
 
-### Number of men and women in each education category; visualization of the age distributions for men and women in each education category
+### Table: number of men and women in each education category; visualization of the age distributions for men and women in each education category
 
 ```{r}
 accel_final |> 
   group_by(sex) |> 
   summarize(count = n()) |> 
-  knitr::kable(digits = 2)
+  knitr::kable()
 
 accel_final |> 
   ggplot(aes(x = sex, y = age)) +
@@ -182,3 +182,110 @@ accel_final |>
 ```
 
 * In all three education plots, the 24-day activity time peaked around the 10th hour, slightly plateaued until the 20th hour, and then decreased. Overall, females have a higher activity time compared to males across all education levels. Less than high school had the highest 24-day activity time at almost 16 g-mins. 
+
+## Problem 3
+
+### Import, clean, and tidy these data
+
+```{r}
+jan_2020 =
+  read_csv("Jan 2020 Citi.csv", 
+           na = c("NA","", ".")) |> 
+  janitor::clean_names() |> 
+  drop_na() |> 
+  mutate(
+    month = "January",
+    year = "2020"
+  )
+
+jan_2024 =
+  read_csv("Jan 2024 Citi.csv", 
+           na = c("NA","", ".")) |> 
+  janitor::clean_names() |> 
+  drop_na() |> 
+  mutate(
+    month = "January",
+    year = "2024"
+  )
+
+jul_2020 =
+  read_csv("July 2020 Citi.csv", 
+           na = c("NA","", ".")) |> 
+  janitor::clean_names() |> 
+  drop_na() |> 
+  mutate(
+    month = "July",
+    year = "2020"
+  ) 
+
+jul_2024 =
+  read_csv("July 2024 Citi.csv", 
+           na = c("NA","", ".")) |> 
+  janitor::clean_names() |> 
+  drop_na() |> 
+  mutate(
+    month = "July",
+    year = "2024"
+  )
+
+citi_df =
+  bind_rows(jan_2020, jul_2020, jan_2024, jul_2024)
+```
+
+In the merged dataframe, there are 99,253 rows and 9 columns. I used bind_rows since they have the same variables.
+
+### Table: total number of rides in each combination of year and month separating casual riders and Citi Bike members
+
+```{r}
+citi_df |> 
+  group_by(month, year, member_casual) |> 
+  summarize(
+    total_rides = n(), .groups = "drop") |> 
+  knitr::kable()
+```
+
+Overall, there are more Citi Bike members than casual members across both months and years. There are fewer bikers in general in January than in July, which makes sense because of the weather.
+
+### Table: Top 5 starting stations for July 2024 w/ number of rides
+
+```{r}
+citi_df |> 
+  group_by(start_station_name) |> 
+  filter(month == "July", year == "2024") |>
+  summarize(total_rides = n(), .groups = "drop") |> 
+  slice_max(order_by = total_rides, n = 5) |> 
+  knitr::kable()
+```
+
+### Plot: day of the week vs median ride duration by month and year
+
+```{r}
+citi_df |> 
+  mutate(
+    weekdays = factor(
+      weekdays, 
+      levels = c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"),
+      ordered = TRUE)) |> 
+  group_by(weekdays, month, year) |> 
+  summarize(
+    median_duration = median(duration, na.rm = TRUE), 
+    .groups = "drop") |> 
+  ggplot(aes(x = weekdays, y = median_duration, group = 1)) +
+  geom_line() + geom_point() +
+  facet_grid(year ~ month)
+```
+
+The highest days of median ride duration across month and year is on Saturday. The highest month and year median ride duration was in July 2020 and the lowest were in January 2024. The highest median ride duration value across month and year is about 17 seconds, and the lowest is 7.5 seconds.
+
+### Figure: month vs. duration by membership status and bike type in 2024
+
+```{r}
+citi_df |> 
+  filter(year == "2024") |> 
+  ggplot(aes(x = month, y = duration)) +
+  geom_boxplot() +
+  coord_cartesian(ylim = c(0, 80)) +
+  facet_grid(rideable_type ~ member_casual)
+```
+
+In July, there is a longer ride duration (seconds) on the bikes than in January. Overall, electric bikes have a higher ride duration than classic bikes, based off the median value. Citi Bike members have less variability in ride duration in January and July, compared to casual bike riders.
