@@ -283,9 +283,10 @@ The highest days of median ride duration across month and year is on Saturday. T
 citi_df |> 
   filter(year == "2024") |> 
   ggplot(aes(x = month, y = duration)) +
-  geom_boxplot() +
-  coord_cartesian(ylim = c(0, 80)) +
+  geom_boxplot(outlier.shape = NA) +
+  coord_cartesian(ylim = c(0, 60)) +
   facet_grid(rideable_type ~ member_casual)
 ```
 
-In July, there is a longer ride duration (seconds) on the bikes than in January. Overall, electric bikes have a higher ride duration than classic bikes, based off the median value. Citi Bike members have less variability in ride duration in January and July, compared to casual bike riders.
+* In July, there is a longer ride duration (seconds) on the bikes than in January. Overall, electric bikes have a higher ride duration than classic bikes, based off the median value. Citi Bike members have less variability compared to casual bike riders.
+* For the purposes of this question, I wanted to display the boxplots visibly, so the outliers are removed from the plot. 
