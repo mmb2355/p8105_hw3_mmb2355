@@ -128,3 +128,19 @@ accel_final =
   filter(age >= 21)
 ```
 
+### Number of men and women in each education category; visualization of the age distributions for men and women in each education category
+
+```{r}
+accel_final |> 
+  group_by(sex) |> 
+  summarize(count = n()) |> 
+  knitr::kable(digits = 2)
+
+accel_final |> 
+  ggplot(aes(x = sex, y = age)) +
+  geom_boxplot() +
+  facet_grid(. ~ education)
+```
+
+* In the dataset, there is 158,400 women (females) and 169,920 men (males)
+* In the boxplot, the median age between men and women who's education level is less than high school are the most similar (around 60 years old), while the median for both sexes who's education level is high school equivalent is the most different (62 years for women, 53 years for men). Women and men who's education level is more than high school have the lowest median compared to the other education level groups, with ages 41 and 43, respectfully.
